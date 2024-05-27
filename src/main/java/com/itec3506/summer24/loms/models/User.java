@@ -1,17 +1,43 @@
 package com.itec3506.summer24.loms.models;
 
 import jakarta.persistence.*;
+import lombok.NonNull;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name="Users")
+@Table(name = "users",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = "email")
+    }
+)
 public class User {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NonNull
+    private String userId;
+
+    @NonNull
+    private String email;
+
+    private String password;
+
+    @NonNull
     private String name;
 
-    private String email;
+    @NonNull
+    private String roles;
+
+    public String getRoles() {
+        return roles;
+    }
+
+    public void setRoles(String roles) {
+        this.roles = roles;
+    }
 
     public Integer getId() {
         return id;
@@ -19,6 +45,22 @@ public class User {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getName() {
@@ -29,11 +71,22 @@ public class User {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setEmail(String email) {
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public User() {}
+
+    public User(Integer id, String email, String password, String roles, String name, String userId) {
+        this.id = id;
         this.email = email;
+        this.password = password;
+        this.roles = roles;
+        this.name = name;
+        this.userId = userId;
     }
 }
