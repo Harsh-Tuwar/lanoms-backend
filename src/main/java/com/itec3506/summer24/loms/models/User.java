@@ -81,6 +81,13 @@ public class User {
 
     public User() {}
 
+    public User(Integer id, String userId, String email, String name) {
+        this.id = id;
+        this.userId = userId;
+        this.email = email;
+        this.name = name;
+    }
+
     public User(Integer id, String email, String password, String roles, String name, String userId) {
         this.id = id;
         this.email = email;

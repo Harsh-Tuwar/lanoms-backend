@@ -3,6 +3,7 @@ package com.itec3506.summer24.loms.security;
 import com.itec3506.summer24.loms.services.UserInfoService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -29,6 +30,7 @@ public class SecurityConfig {
     // User Creation
     @Bean
     @Autowired
+    @Primary
     public UserDetailsService userDetailsService() {
         return new UserInfoService();
     }
