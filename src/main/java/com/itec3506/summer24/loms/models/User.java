@@ -1,7 +1,11 @@
 package com.itec3506.summer24.loms.models;
 
+import com.itec3506.summer24.loms.types.UserStatusEnum;
 import jakarta.persistence.*;
 import lombok.NonNull;
+import org.springframework.web.bind.annotation.DeleteMapping;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users",
@@ -28,20 +32,18 @@ public class User {
     @NonNull
     private String roles;
 
+    @NonNull
+    private UserStatusEnum status;
+
+    @Transient
+    private LocalDateTime deletedAt;
+
     public String getRoles() {
         return roles;
     }
 
     public void setRoles(String roles) {
         this.roles = roles;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getEmail() {
@@ -78,6 +80,10 @@ public class User {
 
     public User() {}
 
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
     public User(Integer id, String userId, String email, String name) {
         this.id = id;
         this.userId = userId;
@@ -85,12 +91,21 @@ public class User {
         this.name = name;
     }
 
-    public User(Integer id, String email, String password, String roles, String name, String userId) {
+    public User(
+            Integer id,
+            String email,
+            String password,
+            String roles,
+            String name,
+            String userId,
+            UserStatusEnum status
+    ) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.roles = roles;
         this.name = name;
         this.userId = userId;
+        this.status = status;
     }
 }

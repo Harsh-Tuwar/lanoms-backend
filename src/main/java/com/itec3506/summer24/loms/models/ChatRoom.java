@@ -35,6 +35,9 @@ public class ChatRoom {
     @Column(nullable = true)
     private LocalDateTime deletedAt;
 
+    @Column(nullable = true)
+    private String deletedBy;
+
     // Constructors
     public ChatRoom() {
         this.createdAt = LocalDateTime.now();
@@ -102,5 +105,13 @@ public class ChatRoom {
 
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+    public String getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(String deletedBy) {
+        this.deletedBy = deletedBy;
     }
 }

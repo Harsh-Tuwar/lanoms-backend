@@ -6,6 +6,7 @@ import com.itec3506.summer24.loms.models.UserListItem;
 import com.itec3506.summer24.loms.repositories.UserInfoRepository;
 import com.itec3506.summer24.loms.utils.LomsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,7 +30,6 @@ public class UserInfoService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> userDetail = repository.getUserByEmail(email);
 
-        // Converting userDetail to UserDetails
         return userDetail.map(UserInfoDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found " + email));
     }
@@ -52,7 +52,6 @@ public class UserInfoService implements UserDetailsService {
                 user.setEmail(userListItem.getEmail());
                 user.setUser_id(userListItem.getUserId());
                 user.setRoles(userListItem.getRoles());
-
                 users.add(user);
             }
         } catch (UnknownError error) {
@@ -60,5 +59,24 @@ public class UserInfoService implements UserDetailsService {
         }
 
         return users;
+    }
+
+    public void deleteUser(String requesterId, String userIdToDelete) throws Exception {
+        try {
+            UserInfoRepository.UserRolesByUserId requesterInfo = repository.getRolesByUserId(requesterId);
+
+            String userRoles = requesterInfo.getRoles();
+
+            if (
+                    !userRoles.contains("ROLE_ADMIN") &&
+                    !userRoles.contains("ROLE_SUPER_USER")
+            ) {
+                throw new InsufficientAuthenticationException("You are not allowed to perform this action");
+            }
+
+            repository.deleteUser(userIdToDelete);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 }
