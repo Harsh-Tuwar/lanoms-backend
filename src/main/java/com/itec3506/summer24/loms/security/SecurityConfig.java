@@ -41,7 +41,7 @@ public class SecurityConfig {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/welcome", "/auth/login").permitAll())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/user/**").authenticated())
-//                .authorizeHttpRequests(auth -> auth.requestMatchers("/auth/admin/**").authenticated())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/room/**").authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)

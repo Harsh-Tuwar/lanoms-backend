@@ -3,15 +3,15 @@ package com.itec3506.summer24.loms.controllers;
 import com.itec3506.summer24.loms.models.AuthRequest;
 import com.itec3506.summer24.loms.services.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 
 @RestController // This means that this class is a Controller
 @RequestMapping("/auth") // This means URL's start with /demo (after Application path)
@@ -23,8 +23,11 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @ResponseBody
     @PostMapping("/login")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<HashMap<String, Object>> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+        HashMap<String, Object> resp = new HashMap<>();
+
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -34,12 +37,15 @@ public class AuthController {
             );
 
             if (authentication.isAuthenticated()) {
-                return jwtService.generateToken(authRequest.getUsername());
+                resp.put("token", jwtService.generateToken(authRequest.getUsername()));
             } else {
-                throw new UsernameNotFoundException("invalid user request !");
+                resp.put("error", "Invalid user request");
             }
+
+            return ResponseEntity.ok(resp);
         } catch (AuthenticationException error) {
-            return error.getMessage();
+            resp.put("error", error.getMessage());
+            return ResponseEntity.ofNullable(resp);
         }
     }
 }

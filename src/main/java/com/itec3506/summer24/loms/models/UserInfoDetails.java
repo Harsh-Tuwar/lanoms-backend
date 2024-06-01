@@ -12,11 +12,13 @@ import java.util.stream.Collectors;
 public class UserInfoDetails implements UserDetails {
     private String email;
     private String password;
+    private String userId;
     private List<GrantedAuthority> authorities;
 
     public UserInfoDetails(User userInfo) {
         email = userInfo.getEmail();
         password = userInfo.getPassword();
+        userId = userInfo.getUserId();
         authorities = Arrays.stream(userInfo.getRoles().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
@@ -48,5 +50,13 @@ public class UserInfoDetails implements UserDetails {
 
     public boolean isEnabled() {
         return true;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

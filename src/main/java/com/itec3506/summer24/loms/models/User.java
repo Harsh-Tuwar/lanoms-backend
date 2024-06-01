@@ -3,9 +3,6 @@ package com.itec3506.summer24.loms.models;
 import jakarta.persistence.*;
 import lombok.NonNull;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Entity
 @Table(name = "users",
     uniqueConstraints = {
