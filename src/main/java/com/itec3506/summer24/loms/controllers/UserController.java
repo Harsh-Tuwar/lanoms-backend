@@ -3,6 +3,8 @@ package com.itec3506.summer24.loms.controllers;
 import com.itec3506.summer24.loms.models.User;
 import com.itec3506.summer24.loms.models.UserListItem;
 import com.itec3506.summer24.loms.services.UserInfoService;
+import com.itec3506.summer24.loms.types.UserStatusEnum;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +34,7 @@ public class UserController {
     @PostMapping("/delete")
     @PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_SUPER_USER')")
     public ResponseEntity<HashMap<String, Object>> deleteUser(
-            @RequestHeader(name="X-User-Id", required = true) String requesterId,
+            HttpServletRequest request,
             @RequestBody Map<String, Object> body
     ) {
         /*
@@ -42,6 +44,7 @@ public class UserController {
          *  - if it's an admin = allow only users
           */
         HashMap<String, Object> resp = new HashMap<>();
+        String requesterId = (String) request.getAttribute("userId");
 
         try {
             String userToDelete = (String) body.get("userIdToDelete");
@@ -51,7 +54,7 @@ public class UserController {
             }
 
             service.deleteUser(requesterId, userToDelete);
-            resp.put("message", "Room Deleted successfully");
+            resp.put("message", "User Deleted successfully");
             resp.put("status", HttpStatus.OK.value());
 
             return ResponseEntity.ok(resp);
@@ -65,10 +68,71 @@ public class UserController {
 
     @ResponseBody
     @GetMapping("/list")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntity<List<UserListItem>> getAllUsers() throws Exception {
+    @PreAuthorize("hasAuthority('ROLE_USER') || hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_SUPER_USER')")
+    public ResponseEntity<List<UserListItem>> getAllUsers(HttpServletRequest request) throws Exception {
         List<UserListItem> users = service.getAllUsers();
 
         return ResponseEntity.ok(users);
+    }
+
+    @ResponseBody
+    @GetMapping("/me")
+    public ResponseEntity<HashMap<String, Object>> getMyData(
+            HttpServletRequest request
+    ) {
+        String requesterId = (String) request.getAttribute("userId");
+        HashMap<String, Object> resp = new HashMap<>();
+
+        try {
+            UserListItem myData = service.getMyData(requesterId);
+            resp.put("status", HttpStatus.OK.value());
+            resp.put("data", myData);
+
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            resp.put("error", e.getMessage());
+            resp.put("causedBy", e.getCause());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resp);
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/status/change")
+    public ResponseEntity<HashMap<String, Object>> setStatus (
+            HttpServletRequest request,
+            @RequestParam(name = "id") String userId,
+            @RequestBody Map<String, Object> body
+    ) {
+        HashMap<String, Object> resp = new HashMap<>();
+        String requesterId = (String) request.getAttribute("userId");
+
+        try {
+            Integer status = (Integer) body.get("status");
+
+            if (
+                    Objects.equals(requesterId, "")
+                    || Objects.equals(userId, "")
+                    || status == null
+            ) {
+                throw new IllegalArgumentException("Missing required data for the response!");
+            }
+
+            if (!Objects.equals(requesterId, userId)) {
+                throw new Exception("You can't change other people's status!");
+            }
+
+            service.updateStatus(userId, UserStatusEnum.fromShortName(status));
+
+            resp.put("status", HttpStatus.OK.value());
+            resp.put("message", "Status updated successfully");
+
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            resp.put("error", e.getMessage());
+            resp.put("causedBy", e.getCause());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resp);
+        }
     }
 }

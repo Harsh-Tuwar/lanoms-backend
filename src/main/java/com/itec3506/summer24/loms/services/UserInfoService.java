@@ -4,6 +4,7 @@ import com.itec3506.summer24.loms.models.User;
 import com.itec3506.summer24.loms.models.UserInfoDetails;
 import com.itec3506.summer24.loms.models.UserListItem;
 import com.itec3506.summer24.loms.repositories.UserInfoRepository;
+import com.itec3506.summer24.loms.types.UserStatusEnum;
 import com.itec3506.summer24.loms.utils.LomsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -27,7 +28,7 @@ public class UserInfoService implements UserDetailsService {
     private PasswordEncoder encoder;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserInfoDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> userDetail = repository.getUserByEmail(email);
 
         return userDetail.map(UserInfoDetails::new)
@@ -52,6 +53,7 @@ public class UserInfoService implements UserDetailsService {
                 user.setEmail(userListItem.getEmail());
                 user.setUser_id(userListItem.getUserId());
                 user.setRoles(userListItem.getRoles());
+                user.setStatus(userListItem.getStatus());
                 users.add(user);
             }
         } catch (UnknownError error) {
@@ -64,19 +66,65 @@ public class UserInfoService implements UserDetailsService {
     public void deleteUser(String requesterId, String userIdToDelete) throws Exception {
         try {
             UserInfoRepository.UserRolesByUserId requesterInfo = repository.getRolesByUserId(requesterId);
+            UserInfoRepository.UserRolesByUserId userToBeDeletedInfo = repository.getRolesByUserId(userIdToDelete);
 
             String userRoles = requesterInfo.getRoles();
+            boolean canDelete = isCanDelete(userToBeDeletedInfo, userRoles);
 
-            if (
-                    !userRoles.contains("ROLE_ADMIN") &&
-                    !userRoles.contains("ROLE_SUPER_USER")
-            ) {
+            if (canDelete) {
+                repository.deleteUser(userIdToDelete);
+            } else {
                 throw new InsufficientAuthenticationException("You are not allowed to perform this action");
             }
-
-            repository.deleteUser(userIdToDelete);
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
+    protected static boolean isCanDelete(UserInfoRepository.UserRolesByUserId userToBeDeletedInfo, String userRoles) {
+        String tbdUserRoles = userToBeDeletedInfo.getRoles();
+
+        boolean requesterIsAdmin = userRoles.contains("ROLE_ADMIN");
+        boolean requesterIsSuperUser = userRoles.contains("ROLE_SUPER_USER");
+
+        boolean userToDeleteIsSuperUser = tbdUserRoles.contains("ROLE_SUPER_USER");
+
+        boolean canDelete = false;
+
+        if (requesterIsSuperUser) {
+            // Super user can delete anyone
+            canDelete = true;
+        } else if (requesterIsAdmin) {
+            // Admin can delete other admins and regular users but not super users
+            if (!userToDeleteIsSuperUser) {
+                canDelete = true;
+            }
+        }
+        return canDelete;
+    }
+
+    public UserListItem getMyData(String userId) throws Exception {
+        try {
+            UserInfoRepository.NameOnly dbResp = repository.getMyData(userId);
+
+            UserListItem myData = new UserListItem();
+            myData.setEmail(dbResp.getEmail());
+            myData.setUser_id(dbResp.getUserId());
+            myData.setStatus(dbResp.getStatus());
+            myData.setRoles(dbResp.getRoles());
+            myData.setName(dbResp.getName());
+
+            return myData;
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
+    public void updateStatus(String requesterId, UserStatusEnum status) throws Exception {
+        try {
+            repository.updateStatus(requesterId, status);
+        } catch (Exception e) {
+            throw new Exception("Something went wrong!: " + e.getMessage());
         }
     }
 }

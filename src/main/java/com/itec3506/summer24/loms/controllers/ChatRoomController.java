@@ -22,15 +22,17 @@ public class ChatRoomController {
     @PostMapping("/create")
     @ResponseBody
     public String createNewRoom(
-            @RequestHeader(name="X-User-Id", required = true) String userId,
+            HttpServletRequest request,
             @RequestBody CreateRoomRequestBody body
     ) {
         try {
+            String requesterId = (String) request.getAttribute("userId");
+
             chatRoomService.createChatRoom(
                     body.getRoomTitle(),
                     body.getRoomTypeId(),
                     body.getParticipants(),
-                    userId
+                    requesterId
             );
 
             return "Room created successfully!";
@@ -52,7 +54,7 @@ public class ChatRoomController {
     @PutMapping("/modify")
     @ResponseBody
     public ResponseEntity<HashMap<String, Object>> updateRoom(
-            @RequestHeader(name="X-User-Id", required = true) String userId,
+            HttpServletRequest request,
             @RequestBody UpdateRoomRequestBody body
     ) {
         HashMap<String, Object> resp = new HashMap<>();
@@ -78,10 +80,11 @@ public class ChatRoomController {
     @DeleteMapping("/delete")
     @ResponseBody
     public ResponseEntity<HashMap<String, Object>> deleteRoom(
-            @RequestHeader(name="X-User-Id", required = true) String userId,
+            HttpServletRequest request,
             @RequestBody String roomId
     ) {
         HashMap<String, Object> resp = new HashMap<>();
+        String requesterId = (String) request.getAttribute("userId");
 
         try {
             resp.put("message", "Room updated successfully");

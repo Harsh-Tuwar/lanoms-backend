@@ -1,5 +1,6 @@
 package com.itec3506.summer24.loms.security;
 
+import com.itec3506.summer24.loms.models.UserInfoDetails;
 import com.itec3506.summer24.loms.services.JwtService;
 import com.itec3506.summer24.loms.services.UserInfoService;
 import jakarta.servlet.FilterChain;
@@ -47,7 +48,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserInfoDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 if (jwtService.validateToken(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -55,6 +56,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                             null,
                             userDetails.getAuthorities()
                     );
+
+                    request.setAttribute("userId", userDetails.getUserId());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
