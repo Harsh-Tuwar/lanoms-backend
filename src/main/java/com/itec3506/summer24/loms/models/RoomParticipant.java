@@ -20,6 +20,9 @@ public class RoomParticipant {
     @NonNull
     private String userId;
 
+    public RoomParticipant() {
+    }
+
     public RoomParticipant(Integer id, String roomId, String userId) {
         this.id = id;
         this.roomId = roomId;
@@ -48,5 +51,14 @@ public class RoomParticipant {
 
     public void setUserId(@NonNull String userId) {
         this.userId = userId;
+    }
+
+    @Override
+    public String toString() {
+        return "RoomParticipant{" +
+                "id=" + id +
+                ", roomId='" + roomId + '\'' +
+                ", userId='" + userId + '\'' +
+                '}';
     }
 }

@@ -1,7 +1,6 @@
 package com.itec3506.summer24.loms.repositories;
 
 import com.itec3506.summer24.loms.models.User;
-import com.itec3506.summer24.loms.models.UserListItem;
 import com.itec3506.summer24.loms.types.UserStatusEnum;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;

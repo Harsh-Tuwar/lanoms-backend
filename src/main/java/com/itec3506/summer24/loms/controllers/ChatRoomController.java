@@ -96,4 +96,31 @@ public class ChatRoomController {
 
         return ResponseEntity.ok(resp);
     }
+
+    // TODO for Feni: Complete this
+    /*
+    Desc:
+        1. This method can be triggered by everyone
+        2. Using the userID from the request
+            - get all roomIds where the requested userID is a part of from the room_participants table
+            - using the roomIds, return all the rooms data
+     */
+    @GetMapping("/my")
+    @ResponseBody
+    public ResponseEntity<HashMap<String, Object>> getMyRooms(
+            HttpServletRequest request
+    ) {
+        HashMap<String, Object> resp = new HashMap<>();
+        String requesterId = (String) request.getAttribute("userId");
+
+        try {
+            resp.put("message", "Room Fetched Successfully!");
+            resp.put("status", HttpStatus.OK.value());
+        } catch (Exception e) {
+            resp.put("error", e.getMessage());
+            resp.put("causedBy", e.getCause());
+        }
+
+        return ResponseEntity.ok(resp);
+    }
 }

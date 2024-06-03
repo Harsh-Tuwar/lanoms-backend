@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/welcome", "/auth/login").permitAll())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/user/**").authenticated())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/room/**").authenticated())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/chat/**").authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)

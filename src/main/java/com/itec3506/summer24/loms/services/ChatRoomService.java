@@ -41,4 +41,8 @@ public class ChatRoomService {
         roomParticipantsRepository.saveAll(rpList);
         chatRoomsRepository.save(chatRoom);
     }
+
+    public List<RoomParticipant> getRoomsByUserId(String userId) {
+        return roomParticipantsRepository.getRoomsByUserId(userId);
+    }
 }
