@@ -18,7 +18,7 @@ public class ChatRoomController {
     @Autowired
     private ChatRoomService chatRoomService;
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER') || hasAuthority('ROLE_SUPER_USER') || hasAuthority('ROLE_ADMIN')")
     @PostMapping("/create")
     @ResponseBody
     public String createNewRoom(
@@ -41,7 +41,6 @@ public class ChatRoomController {
         }
     }
 
-    //TODO for Feni: Complete this
     /*
     Desc:
         1. This method can only be triggered by the user with a role of "SUPER_USER" or "ADMIN".
@@ -58,8 +57,10 @@ public class ChatRoomController {
             @RequestBody UpdateRoomRequestBody body
     ) {
         HashMap<String, Object> resp = new HashMap<>();
+        String requesterId = (String) request.getAttribute("userId");
 
         try {
+            chatRoomService.updateRoom(requesterId, body);
             resp.put("message", "Room updated successfully");
             resp.put("status", HttpStatus.OK.value());
         } catch (Exception e) {

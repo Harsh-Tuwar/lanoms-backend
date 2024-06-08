@@ -38,6 +38,7 @@ public class UserInfoService implements UserDetailsService {
         LomsUtils utils = new LomsUtils();
         userInfo.setUserId(utils.generateUuid());
         userInfo.setPassword(encoder.encode(userInfo.getPassword()));
+        userInfo.setStatus(UserStatusEnum.AWAY);
         repository.save(userInfo);
         return "User Added Successfully";
     }

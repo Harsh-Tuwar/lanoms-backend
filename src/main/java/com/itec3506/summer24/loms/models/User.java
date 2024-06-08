@@ -78,6 +78,14 @@ public class User {
         this.userId = userId;
     }
 
+    public @NonNull UserStatusEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(@NonNull UserStatusEnum status) {
+        this.status = status;
+    }
+
     public User() {}
 
     public void setDeletedAt(LocalDateTime deletedAt) {

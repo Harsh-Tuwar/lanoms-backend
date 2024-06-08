@@ -53,6 +53,12 @@ public class ChatRoom {
         this.createdBy = createdBy;
     }
 
+    public ChatRoom(String roomID, String roomTitle, RoomTypesEnum roomTypeId) {
+        this.roomID = roomID;
+        this.roomTitle = roomTitle;
+        this.roomTypeId = roomTypeId;
+    }
+
     // Getters and Setters
     public String getRoomId() {
         return roomID;
