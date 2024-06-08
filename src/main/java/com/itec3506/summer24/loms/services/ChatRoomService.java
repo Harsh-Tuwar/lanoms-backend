@@ -1,6 +1,7 @@
 package com.itec3506.summer24.loms.services;
 
 import com.itec3506.summer24.loms.models.ChatRoom;
+import com.itec3506.summer24.loms.models.ResponseChatRoom;
 import com.itec3506.summer24.loms.models.RoomParticipant;
 import com.itec3506.summer24.loms.repositories.ChatRoomRepository;
 import com.itec3506.summer24.loms.repositories.RoomParticipantsRepository;
@@ -52,6 +53,43 @@ public class ChatRoomService {
         return roomParticipantsRepository.getRoomsByUserId(userId);
     }
 
+    public List<ResponseChatRoom> getChatRoomsByUserId(String userId) throws Exception {
+        List<ResponseChatRoom> roomList = new ArrayList<>();
+
+        try {
+            List<RoomParticipant> userRooms = roomParticipantsRepository.getRoomsByUserId(userId);
+
+            for (RoomParticipant rpItem: userRooms) {
+                String roomId = rpItem.getRoomId();
+
+                // Get room data
+                ChatRoom roomData = chatRoomsRepository.getRoomByRoomID(roomId);
+
+                if (roomData == null) {
+                    continue;
+                }
+
+                // Get all participants of the current roomID
+                List<RoomParticipant> rp = roomParticipantsRepository.getParticipantsByRoomId(roomId);
+
+                ResponseChatRoom roomListItem = new ResponseChatRoom(
+                        roomData.getRoomTitle(),
+                        roomData.getRoomId(),
+                        rp,
+                        roomData.getCreatedAt(),
+                        roomData.getCreatedBy(),
+                        roomData.getRoomTypeId()
+                );
+
+                roomList.add(roomListItem);
+            }
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+
+        return roomList;
+    }
+
     public void updateRoom(String requesterId, UpdateRoomRequestBody body) throws Exception {
         try {
             String roomId = body.getRoomId();
@@ -100,6 +138,14 @@ public class ChatRoomService {
             chatRoomsRepository.save(updatedRoom);
         } catch (Exception e) {
             throw new Exception("Something went wrong: " + e.getMessage());
+        }
+    }
+
+    public void deleteRoom(String roomId, String userId) throws Exception {
+        try {
+            chatRoomsRepository.deleteRoom(roomId, userId);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
         }
     }
 }

@@ -1,8 +1,13 @@
 package com.itec3506.summer24.loms.controllers;
 
+import com.itec3506.summer24.loms.models.ResponseChatRoom;
+import com.itec3506.summer24.loms.models.RoomParticipant;
+import com.itec3506.summer24.loms.repositories.UserInfoRepository;
 import com.itec3506.summer24.loms.requestBody.CreateRoomRequestBody;
+import com.itec3506.summer24.loms.requestBody.DeleteRoomRequestBody;
 import com.itec3506.summer24.loms.requestBody.UpdateRoomRequestBody;
 import com.itec3506.summer24.loms.services.ChatRoomService;
+import com.itec3506.summer24.loms.types.RoomTypesEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,11 +15,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/room")
 public class ChatRoomController {
+    @Autowired
+    private UserInfoRepository userRepo;
+
     @Autowired
     private ChatRoomService chatRoomService;
 
@@ -27,6 +37,11 @@ public class ChatRoomController {
     ) {
         try {
             String requesterId = (String) request.getAttribute("userId");
+            UserInfoRepository.UserRolesByUserId userData = userRepo.getRolesByUserId(requesterId);
+
+            if (body.getRoomTypeId() != RoomTypesEnum.DM && userData.getRoles().contains("ROLE_USER")) {
+                throw new Exception("Insufficient Permission! You are only allowed to create a DM!");
+            }
 
             chatRoomService.createChatRoom(
                     body.getRoomTitle(),
@@ -71,7 +86,6 @@ public class ChatRoomController {
         return ResponseEntity.ok(resp);
     }
 
-    //TODO for Feni: Complete this
     /*
     Desc:
         1. This method can only be triggered by the user with a role of "SUPER_USER" or "ADMIN".
@@ -82,13 +96,14 @@ public class ChatRoomController {
     @ResponseBody
     public ResponseEntity<HashMap<String, Object>> deleteRoom(
             HttpServletRequest request,
-            @RequestBody String roomId
+            @RequestBody DeleteRoomRequestBody body
     ) {
         HashMap<String, Object> resp = new HashMap<>();
         String requesterId = (String) request.getAttribute("userId");
 
         try {
-            resp.put("message", "Room updated successfully");
+            chatRoomService.deleteRoom(body.getRoomID(), requesterId);
+            resp.put("message", "Room Deleted successfully");
             resp.put("status", HttpStatus.OK.value());
         } catch (Exception e) {
             resp.put("error", e.getMessage());
@@ -98,7 +113,6 @@ public class ChatRoomController {
         return ResponseEntity.ok(resp);
     }
 
-    // TODO for Feni: Complete this
     /*
     Desc:
         1. This method can be triggered by everyone
@@ -115,7 +129,35 @@ public class ChatRoomController {
         String requesterId = (String) request.getAttribute("userId");
 
         try {
-            resp.put("message", "Room Fetched Successfully!");
+            List<ResponseChatRoom> rooms = chatRoomService.getChatRoomsByUserId(requesterId);
+            List<Object> roomList = new ArrayList<>();
+
+            if (!rooms.isEmpty()) {
+                for (ResponseChatRoom room: rooms) {
+                    HashMap<String, Object> roomItem = new HashMap<>();
+                    roomItem.put("title", room.getTitle());
+                    roomItem.put("roomID", room.getRoomID());
+                    roomItem.put("createdAt", room.getCreatedAt());
+                    roomItem.put("createdBy", room.getCreatedBy());
+                    roomItem.put("roomType", room.getRoomTypeId());
+
+                    List<Object> participants = new ArrayList<>();
+
+                    for (RoomParticipant member: room.getParticipants()) {
+                        HashMap<String, Object> memberItem = new HashMap<>();
+                        memberItem.put("userId", member.getUserId());
+                        memberItem.put("internalId", member.getId());
+
+                        participants.add(memberItem);
+                    }
+
+                    roomItem.put("participants", participants);
+
+                    roomList.add(roomItem);
+                }
+            }
+
+            resp.put("rooms", roomList);
             resp.put("status", HttpStatus.OK.value());
         } catch (Exception e) {
             resp.put("error", e.getMessage());

@@ -14,6 +14,9 @@ public interface RoomParticipantsRepository extends JpaRepository<RoomParticipan
     @Query(value = "SELECT DISTINCT id, room_id, user_id FROM room_participants WHERE user_id=(:user_id)", nativeQuery = true)
     ArrayList<RoomParticipant> getRoomsByUserId(@Param("user_id") String user_id);
 
+    @Query(value = "SELECT DISTINCT id, room_id, user_id FROM room_participants WHERE room_id=(:room_id)", nativeQuery = true)
+    ArrayList<RoomParticipant> getParticipantsByRoomId(@Param("room_id") String room_id);
+
     @Transactional
     @Modifying
     @Query(value = "DELETE from room_participants WHERE room_id = (:room_id);", nativeQuery = true)

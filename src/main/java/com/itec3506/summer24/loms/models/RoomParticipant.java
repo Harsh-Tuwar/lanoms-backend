@@ -3,8 +3,6 @@ package com.itec3506.summer24.loms.models;
 import jakarta.persistence.*;
 import lombok.NonNull;
 
-import java.util.UUID;
-
 @Entity
 @Table(
         name="roomParticipants"

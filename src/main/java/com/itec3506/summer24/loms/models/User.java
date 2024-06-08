@@ -3,7 +3,6 @@ package com.itec3506.summer24.loms.models;
 import com.itec3506.summer24.loms.types.UserStatusEnum;
 import jakarta.persistence.*;
 import lombok.NonNull;
-import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.time.LocalDateTime;
 
