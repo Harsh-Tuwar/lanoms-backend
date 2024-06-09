@@ -1,5 +1,6 @@
-package com.itec3506.summer24.loms.security;
+package com.itec3506.summer24.loms.config;
 
+import com.itec3506.summer24.loms.security.JwtAuthFilter;
 import com.itec3506.summer24.loms.services.UserInfoService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +40,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/welcome", "/auth/login").permitAll())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/welcome", "/auth/login", "/websocket", "/index.html", "/app.js").permitAll())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/user/**").authenticated())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/room/**").authenticated())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/chat/**").authenticated())

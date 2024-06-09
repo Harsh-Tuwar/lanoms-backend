@@ -53,4 +53,16 @@ public class ResponseChatRoom {
     public RoomTypesEnum getRoomTypeId() {
         return roomTypeId;
     }
+
+    @Override
+    public String toString() {
+        return "ResponseChatRoom{" +
+                "title='" + title + '\'' +
+                ", roomID='" + roomID + '\'' +
+                ", participants=" + participants +
+                ", createdAt=" + createdAt +
+                ", createdBy='" + createdBy + '\'' +
+                ", roomTypeId=" + roomTypeId +
+                '}';
+    }
 }

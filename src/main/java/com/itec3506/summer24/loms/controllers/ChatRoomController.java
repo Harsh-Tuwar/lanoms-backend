@@ -8,10 +8,12 @@ import com.itec3506.summer24.loms.requestBody.DeleteRoomRequestBody;
 import com.itec3506.summer24.loms.requestBody.UpdateRoomRequestBody;
 import com.itec3506.summer24.loms.services.ChatRoomService;
 import com.itec3506.summer24.loms.types.RoomTypesEnum;
+import com.itec3506.summer24.loms.types.WebsocketTopicsEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +29,13 @@ public class ChatRoomController {
 
     @Autowired
     private ChatRoomService chatRoomService;
+
+    private SimpMessagingTemplate template;
+
+    @Autowired
+    public ChatRoomController(SimpMessagingTemplate template) {
+        this.template = template;
+    }
 
     @PreAuthorize("hasAuthority('ROLE_USER') || hasAuthority('ROLE_SUPER_USER') || hasAuthority('ROLE_ADMIN')")
     @PostMapping("/create")
@@ -49,6 +58,9 @@ public class ChatRoomController {
                     body.getParticipants(),
                     requesterId
             );
+
+            // Send message to all public channel (filtering will be done on the client side)
+            this.template.convertAndSend(WebsocketTopicsEnum.PUBLIC.toString(), body);
 
             return "Room created successfully!";
         } catch (Exception error) {

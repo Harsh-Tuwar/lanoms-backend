@@ -11,8 +11,8 @@ import java.util.UUID;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, UUID> {
 
-    @Query(value = "SELECT roomid, room_title, room_type_id, created_by, created_at, deleted_at, deleted_by, updated_at FROM chat_rooms WHERE roomid = ?1 AND deleted_at = NULL;",nativeQuery = true)
-    ChatRoom getRoomByRoomID(String roomID);
+    @Query(value = "SELECT roomid, room_title, room_type_id, created_by, created_at, deleted_at, deleted_by, updated_at FROM chat_rooms WHERE roomid = (:room_id) AND deleted_at IS NULL;",nativeQuery = true)
+    ChatRoom getRoomByRoomID(@Param("room_id") String room_id);
 
     @Transactional
     @Modifying

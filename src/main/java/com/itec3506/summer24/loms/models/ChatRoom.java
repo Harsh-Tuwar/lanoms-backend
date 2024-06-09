@@ -120,4 +120,18 @@ public class ChatRoom {
     public void setDeletedBy(String deletedBy) {
         this.deletedBy = deletedBy;
     }
+
+    @Override
+    public String toString() {
+        return "ChatRoom{" +
+                "roomID='" + roomID + '\'' +
+                ", roomTitle='" + roomTitle + '\'' +
+                ", roomTypeId=" + roomTypeId +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", createdBy='" + createdBy + '\'' +
+                ", deletedAt=" + deletedAt +
+                ", deletedBy='" + deletedBy + '\'' +
+                '}';
+    }
 }
