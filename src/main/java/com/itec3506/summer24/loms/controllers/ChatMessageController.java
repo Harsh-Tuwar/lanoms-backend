@@ -79,6 +79,10 @@ public class ChatMessageController {
 
         try{
             msgService.sendToRoomId(body);
+
+            /**
+             * webnsocket.send("atiopasdsD", payload);
+             */
             resp.put("status", HttpStatus.OK.value());
             resp.put("message", "Message Sent!");
 
