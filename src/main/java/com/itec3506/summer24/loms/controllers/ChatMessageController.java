@@ -4,10 +4,12 @@ import com.itec3506.summer24.loms.models.RoomParticipant;
 import com.itec3506.summer24.loms.requestBody.SendMessageRequestBody;
 import com.itec3506.summer24.loms.services.ChatMessageService;
 import com.itec3506.summer24.loms.services.ChatRoomService;
+import com.itec3506.summer24.loms.types.WebsocketTopicsEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,6 +24,13 @@ public class ChatMessageController {
     @Autowired
     private ChatRoomService chatRoomService;
 
+    private SimpMessagingTemplate template;
+
+    @Autowired
+    public ChatMessageController(SimpMessagingTemplate template) {
+        this.template = template;
+    }
+
     @GetMapping("")
     public ResponseEntity<HashMap<String, Object>> getMessagesByRoomId (
             HttpServletRequest request,
@@ -29,10 +38,6 @@ public class ChatMessageController {
     ) {
         HashMap<String, Object> resp = new HashMap<>();
         String requesterId = (String) request.getAttribute("userId");
-
-        /**
-         * Check if requester has access to the room
-         */
 
         if (requesterId == null || roomId == null) {
             throw new IllegalArgumentException("Missing required data for the response!");
@@ -78,11 +83,12 @@ public class ChatMessageController {
         }
 
         try{
+            // Record the message into DB
             msgService.sendToRoomId(body);
 
-            /**
-             * webnsocket.send("atiopasdsD", payload);
-             */
+            // Send message to all chats channel (filtering will be done on the client side)
+            this.template.convertAndSend(WebsocketTopicsEnum.CHAT.toString(), body);
+
             resp.put("status", HttpStatus.OK.value());
             resp.put("message", "Message Sent!");
 

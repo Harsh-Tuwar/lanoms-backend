@@ -1,5 +1,6 @@
-package com.itec3506.summer24.loms.security;
+package com.itec3506.summer24.loms.config;
 
+import com.itec3506.summer24.loms.security.JwtAuthFilter;
 import com.itec3506.summer24.loms.services.UserInfoService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

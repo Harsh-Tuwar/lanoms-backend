@@ -1,4 +1,4 @@
-package com.itec3506.summer24.loms.utils;
+package com.itec3506.summer24.loms.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
