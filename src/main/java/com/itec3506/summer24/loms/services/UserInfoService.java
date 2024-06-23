@@ -127,4 +127,16 @@ public class UserInfoService implements UserDetailsService {
             throw new Exception("Something went wrong!: " + e.getMessage());
         }
     }
+
+    public Integer getTotalUserCount() throws Exception {
+        Integer totalUserCount = -1;
+
+        try {
+            totalUserCount = repository.getTotalUserCount();
+        } catch (Exception e) {
+            throw new Exception("Something went wrong!: "+ e.getMessage());
+        }
+
+        return totalUserCount;
+    }
 }

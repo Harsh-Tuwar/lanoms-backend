@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController // This means that this class is a Controller
-@RequestMapping("/user") // This means URL's start with /demo (after Application path)
+@RequestMapping("/user") // This means URL's start with /user (after Application path)
 public class UserController {
 
     @Autowired
@@ -27,6 +27,33 @@ public class UserController {
             return service.addUser(userInfo);
         } catch (UnknownError error) {
             return error.getMessage();
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/admin/register")
+    public ResponseEntity<HashMap<String, Object>> registerAdmin(@RequestBody User userInfo) {
+        HashMap<String, Object> resp = new HashMap<>();
+
+        try {
+            Integer userCount = service.getTotalUserCount();
+
+            if (userCount > 0 || userCount == -1) {
+                // check if this is the first user that is being registered
+                resp.put("message", "Can't create new super admin at this time!");
+                resp.put("status", HttpStatus.BAD_REQUEST.value());
+            } else {
+                service.addUser(userInfo);
+                resp.put("message", "New admin user created successfully!");
+                resp.put("status", HttpStatus.CREATED.value());
+            }
+
+            return ResponseEntity.ok(resp);
+        } catch (Exception error) {
+            resp.put("error", error.getMessage());
+            resp.put("causedBy", error.getCause());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resp);
         }
     }
 

@@ -17,6 +17,9 @@ public interface UserInfoRepository extends JpaRepository<User, Integer> {
     @Query(value = "SELECT id, email, password, roles, name, user_id, status from users where email=?1;", nativeQuery = true)
     Optional<User> getUserByEmail(String email);
 
+    @Query(value = "SELECT count(*) as totalUsers FROM users where deleted_at is NULL;", nativeQuery = true)
+    Integer getTotalUserCount();
+
     @Query(value = "SELECT email, name, roles, user_id, status from users where deleted_at is null;", nativeQuery = true)
     ArrayList<NameOnly> getAllUsers();
     public static interface NameOnly {
