@@ -59,7 +59,7 @@ public class UserController {
 
     @ResponseBody
     @PostMapping("/delete")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_SUPER_USER')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_SUPER_USER') || hasAuthority('ROLE_SUPER_ADMIN')")
     public ResponseEntity<HashMap<String, Object>> deleteUser(
             HttpServletRequest request,
             @RequestBody Map<String, Object> body
@@ -95,7 +95,7 @@ public class UserController {
 
     @ResponseBody
     @GetMapping("/list")
-    @PreAuthorize("hasAuthority('ROLE_USER') || hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_SUPER_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER') || hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_SUPER_USER') || hasAuthority('ROLE_SUPER_ADMIN')")
     public ResponseEntity<List<UserListItem>> getAllUsers(HttpServletRequest request) throws Exception {
         List<UserListItem> users = service.getAllUsers();
 

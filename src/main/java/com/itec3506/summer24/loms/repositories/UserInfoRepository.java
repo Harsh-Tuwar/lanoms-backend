@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface UserInfoRepository extends JpaRepository<User, Integer> {
 
-    @Query(value = "SELECT id, email, password, roles, name, user_id, status from users where email=?1;", nativeQuery = true)
+    @Query(value = "SELECT id, email, password, roles, name, user_id, status, deleted_at from users where email=?1;", nativeQuery = true)
     Optional<User> getUserByEmail(String email);
 
     @Query(value = "SELECT count(*) as totalUsers FROM users where deleted_at is NULL;", nativeQuery = true)

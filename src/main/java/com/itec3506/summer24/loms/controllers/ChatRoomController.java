@@ -37,7 +37,7 @@ public class ChatRoomController {
         this.template = template;
     }
 
-    @PreAuthorize("hasAuthority('ROLE_USER') || hasAuthority('ROLE_SUPER_USER') || hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_USER') || hasAuthority('ROLE_SUPER_USER') || hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_SUPER_ADMIN')")
     @PostMapping("/create")
     @ResponseBody
     public String createNewRoom(
@@ -76,7 +76,7 @@ public class ChatRoomController {
         4. Update Participants from room_participants table
         5. Make sure to add the requester as one of the participant
      */
-    @PreAuthorize("hasAuthority('ROLE_SUPER_USER') || hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SUPER_USER') || hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_SUPER_ADMIN')")
     @PutMapping("/modify")
     @ResponseBody
     public ResponseEntity<HashMap<String, Object>> updateRoom(
@@ -103,7 +103,7 @@ public class ChatRoomController {
         1. This method can only be triggered by the user with a role of "SUPER_USER" or "ADMIN".
         2. Update deleted_at column of "chat_rooms" table with Date.now();
      */
-    @PreAuthorize("hasAuthority('ROLE_SUPER_USER') || hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SUPER_USER') || hasAuthority('ROLE_ADMIN') || hasAuthority('ROLE_SUPER_ADMIN')")
     @DeleteMapping("/delete")
     @ResponseBody
     public ResponseEntity<HashMap<String, Object>> deleteRoom(

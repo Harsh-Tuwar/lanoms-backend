@@ -39,6 +39,7 @@ public class UserInfoService implements UserDetailsService {
         userInfo.setUserId(utils.generateUuid());
         userInfo.setPassword(encoder.encode(userInfo.getPassword()));
         userInfo.setStatus(UserStatusEnum.AWAY);
+        userInfo.setDeletedAt(null);
         repository.save(userInfo);
         return "User Added Successfully";
     }

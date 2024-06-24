@@ -34,7 +34,6 @@ public class User {
     @NonNull
     private UserStatusEnum status;
 
-    @Transient
     private LocalDateTime deletedAt;
 
     public String getRoles() {
