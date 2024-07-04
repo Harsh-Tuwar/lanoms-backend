@@ -47,4 +47,18 @@ public class AuthController {
             return ResponseEntity.ofNullable(resp);
         }
     }
+
+    @ResponseBody
+    @PostMapping("/ping")
+    public ResponseEntity<HashMap<String, Object>> checkAuthToken() {
+        HashMap<String, Object> resp = new HashMap<>();
+
+        try {
+            resp.put("message", "ok!");
+            return ResponseEntity.ok(resp);
+        } catch (AuthenticationException error) {
+            resp.put("error", error.getMessage());
+            return ResponseEntity.ofNullable(resp);
+        }
+    }
 }
