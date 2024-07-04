@@ -31,6 +31,34 @@ public class UserController {
     }
 
     @ResponseBody
+    @GetMapping("/admin/new-admin-check")
+    public ResponseEntity<HashMap<String, Object>> checkIfAdminNeeded() {
+        HashMap<String, Object> resp = new HashMap<>();
+
+        try {
+            Integer userCount = service.getTotalUserCount();
+
+            boolean allowCreateAdmin = false;
+
+            if (userCount <= 0) {
+                resp.put("message", "Need new admin!");
+                allowCreateAdmin = true;
+            } else {
+                resp.put("message", "Admin already exist!");
+            }
+
+            resp.put("needNewAdmin", allowCreateAdmin);
+
+            return ResponseEntity.status(HttpStatus.OK).body(resp);
+        } catch (Exception error) {
+            resp.put("error", error.getMessage());
+            resp.put("causedBy", error.getCause());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resp);
+        }
+    }
+
+    @ResponseBody
     @PostMapping("/admin/register")
     public ResponseEntity<HashMap<String, Object>> registerAdmin(@RequestBody User userInfo) {
         HashMap<String, Object> resp = new HashMap<>();
